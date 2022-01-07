@@ -337,7 +337,7 @@ class Connection implements ConnectionInterface
                 } catch (\PDOException $e) {
                     if (strpos($e->getMessage(), "Prepared statement needs to be re-prepared") !== FALSE) {
                         // Retry.
-                        Log::error("Reintentada consulta por error: " + $e->getMessage());
+                        Log::error("Reintentada consulta por error: " . $e->getMessage());
                         continue;
                     }
                 }
@@ -386,7 +386,7 @@ class Connection implements ConnectionInterface
                 } catch (\PDOException $e) {
                     if (strpos($e->getMessage(), "Prepared statement needs to be re-prepared") !== FALSE) {
                         // Retry.
-                        Log::error("Reintentada consulta por error: " + $e->getMessage());
+                        Log::error("Reintentada consulta por error: " . $e->getMessage());
                         continue;
                     }
                 }
@@ -492,7 +492,7 @@ class Connection implements ConnectionInterface
                 } catch (\PDOException $e) {
                     if (strpos($e->getMessage(), "Prepared statement needs to be re-prepared") !== FALSE) {
                         // Retry.
-                        Log::error("Reintentada consulta por error: " + $e->getMessage());
+                        Log::error("Reintentada consulta por error: " . $e->getMessage());
                         continue;
                     }
                 }
@@ -527,7 +527,7 @@ class Connection implements ConnectionInterface
                 } catch (\PDOException $e) {
                     if (strpos($e->getMessage(), "Prepared statement needs to be re-prepared") !== FALSE) {
                         // Retry.
-                        Log::error("Reintentada consulta por error: " + $e->getMessage());
+                        Log::error("Reintentada consulta por error: " . $e->getMessage());
                         continue;
                     }
                 }
