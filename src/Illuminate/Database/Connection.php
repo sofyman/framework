@@ -321,6 +321,8 @@ class Connection implements ConnectionInterface
                 return [];
             }
 
+            $reintentado = false;
+            $reqId = random_int(1, 1000000);
             while (true) {
                 // For select statements, we'll simply execute the query and return an array
                 // of the database result set. Each element in the array will be a single
@@ -337,11 +339,14 @@ class Connection implements ConnectionInterface
                 } catch (\PDOException $e) {
                     if (strpos($e->getMessage(), "Prepared statement needs to be re-prepared") !== FALSE) {
                         // Retry.
-                        Log::error("Reintentada consulta por error: " . $e->getMessage());
+                        Log::error("$reqId - Reintentada consulta por error: " . $e->getMessage());
+                        $reintentado = true;
+                        sleep(0.1);
                         continue;
                     }
                 }
 
+                if ($reintentado) Log::error("$reqId - Reintento exitoso");
                 break;
             }
 
@@ -364,6 +369,8 @@ class Connection implements ConnectionInterface
                 return [];
             }
 
+            $reintentado = false;
+            $reqId = random_int(1, 1000000);
             while (true) {
                 // First we will create a statement for the query. Then, we will set the fetch
                 // mode and prepare the bindings for the query. Once that's done we will be
@@ -386,11 +393,14 @@ class Connection implements ConnectionInterface
                 } catch (\PDOException $e) {
                     if (strpos($e->getMessage(), "Prepared statement needs to be re-prepared") !== FALSE) {
                         // Retry.
-                        Log::error("Reintentada consulta por error: " . $e->getMessage());
+                        Log::error("$reqId - Reintentada consulta por error: " . $e->getMessage());
+                        $reintentado = true;
+                        sleep(0.1);
                         continue;
                     }
                 }
 
+                if ($reintentado) Log::error("$reqId - Reintento exitoso");
                 break;
             }
 
@@ -480,6 +490,8 @@ class Connection implements ConnectionInterface
                 return true;
             }
 
+            $reintentado = false;
+            $reqId = random_int(1, 1000000);
             while (true) {
                 $statement = $this->getPdo()->prepare($query);
 
@@ -488,11 +500,15 @@ class Connection implements ConnectionInterface
                 $this->recordsHaveBeenModified();
 
                 try {
-                    return $statement->execute();
+                    $result = $statement->execute();
+                    if ($reintentado) Log::error("$reqId - Reintento exitoso");
+                    return $result;
                 } catch (\PDOException $e) {
                     if (strpos($e->getMessage(), "Prepared statement needs to be re-prepared") !== FALSE) {
                         // Retry.
-                        Log::error("Reintentada consulta por error: " . $e->getMessage());
+                        Log::error("$reqId - Reintentada consulta por error: " . $e->getMessage());
+                        $reintentado = true;
+                        sleep(0.1);
                         continue;
                     }
                 }
@@ -514,6 +530,8 @@ class Connection implements ConnectionInterface
                 return 0;
             }
 
+            $reintentado = false;
+            $reqId = random_int(1, 1000000);
             while (true) {
                 // For update or delete statements, we want to get the number of rows affected
                 // by the statement and return that back to the developer. We'll first need
@@ -527,10 +545,14 @@ class Connection implements ConnectionInterface
                 } catch (\PDOException $e) {
                     if (strpos($e->getMessage(), "Prepared statement needs to be re-prepared") !== FALSE) {
                         // Retry.
-                        Log::error("Reintentada consulta por error: " . $e->getMessage());
+                        Log::error("$reqId - Reintentada consulta por error: " . $e->getMessage());
+                        $reintentado = true;
+                        sleep(0.1);
                         continue;
                     }
                 }
+                
+                if ($reintentado) Log::error("$reqId - Reintento exitoso");
 
                 break;
             }
