@@ -17,6 +17,8 @@ use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Schema\Builder as SchemaBuilder;
 use Illuminate\Database\Query\Grammars\Grammar as QueryGrammar;
+use Illuminate\Support\Facades\Log;
+
 
 class Connection implements ConnectionInterface
 {
