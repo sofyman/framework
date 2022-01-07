@@ -319,15 +319,29 @@ class Connection implements ConnectionInterface
                 return [];
             }
 
-            // For select statements, we'll simply execute the query and return an array
-            // of the database result set. Each element in the array will be a single
-            // row from the database table, and will either be an array or objects.
-            $statement = $this->prepared($this->getPdoForSelect($useReadPdo)
-                              ->prepare($query));
+            while (true) {
+                // For select statements, we'll simply execute the query and return an array
+                // of the database result set. Each element in the array will be a single
+                // row from the database table, and will either be an array or objects.
+                $statement = $this->prepared(
+                    $this->getPdoForSelect($useReadPdo)
+                         ->prepare($query)
+                );
 
-            $this->bindValues($statement, $this->prepareBindings($bindings));
+                $this->bindValues($statement, $this->prepareBindings($bindings));
 
-            $statement->execute();
+                try {
+                    $statement->execute();
+                } catch (\PDOException $e) {
+                    if (strpos($e->getMessage(), "Prepared statement needs to be re-prepared") !== FALSE) {
+                        // Retry.
+                        Log::error("Reintentada consulta por error: " + $e->getMessage());
+                        continue;
+                    }
+                }
+
+                break;
+            }
 
             return $statement->fetchAll();
         });
@@ -348,20 +362,35 @@ class Connection implements ConnectionInterface
                 return [];
             }
 
-            // First we will create a statement for the query. Then, we will set the fetch
-            // mode and prepare the bindings for the query. Once that's done we will be
-            // ready to execute the query against the database and return the cursor.
-            $statement = $this->prepared($this->getPdoForSelect($useReadPdo)
-                              ->prepare($query));
+            while (true) {
+                // First we will create a statement for the query. Then, we will set the fetch
+                // mode and prepare the bindings for the query. Once that's done we will be
+                // ready to execute the query against the database and return the cursor.
+                $statement = $this->prepared(
+                    $this->getPdoForSelect($useReadPdo)
+                         ->prepare($query)
+                );
 
-            $this->bindValues(
-                $statement, $this->prepareBindings($bindings)
-            );
+                $this->bindValues(
+                    $statement,
+                    $this->prepareBindings($bindings)
+                );
 
-            // Next, we'll execute the query against the database and return the statement
-            // so we can return the cursor. The cursor will use a PHP generator to give
-            // back one row at a time without using a bunch of memory to render them.
-            $statement->execute();
+                // Next, we'll execute the query against the database and return the statement
+                // so we can return the cursor. The cursor will use a PHP generator to give
+                // back one row at a time without using a bunch of memory to render them.
+                try {
+                    $statement->execute();
+                } catch (\PDOException $e) {
+                    if (strpos($e->getMessage(), "Prepared statement needs to be re-prepared") !== FALSE) {
+                        // Retry.
+                        Log::error("Reintentada consulta por error: " + $e->getMessage());
+                        continue;
+                    }
+                }
+
+                break;
+            }
 
             return $statement;
         });
@@ -449,13 +478,23 @@ class Connection implements ConnectionInterface
                 return true;
             }
 
-            $statement = $this->getPdo()->prepare($query);
+            while (true) {
+                $statement = $this->getPdo()->prepare($query);
 
-            $this->bindValues($statement, $this->prepareBindings($bindings));
+                $this->bindValues($statement, $this->prepareBindings($bindings));
 
-            $this->recordsHaveBeenModified();
+                $this->recordsHaveBeenModified();
 
-            return $statement->execute();
+                try {
+                    return $statement->execute();
+                } catch (\PDOException $e) {
+                    if (strpos($e->getMessage(), "Prepared statement needs to be re-prepared") !== FALSE) {
+                        // Retry.
+                        Log::error("Reintentada consulta por error: " + $e->getMessage());
+                        continue;
+                    }
+                }
+            }
         });
     }
 
@@ -473,14 +512,26 @@ class Connection implements ConnectionInterface
                 return 0;
             }
 
-            // For update or delete statements, we want to get the number of rows affected
-            // by the statement and return that back to the developer. We'll first need
-            // to execute the statement and then we'll use PDO to fetch the affected.
-            $statement = $this->getPdo()->prepare($query);
+            while (true) {
+                // For update or delete statements, we want to get the number of rows affected
+                // by the statement and return that back to the developer. We'll first need
+                // to execute the statement and then we'll use PDO to fetch the affected.
+                $statement = $this->getPdo()->prepare($query);
 
-            $this->bindValues($statement, $this->prepareBindings($bindings));
+                $this->bindValues($statement, $this->prepareBindings($bindings));
 
-            $statement->execute();
+                try {
+                    $statement->execute();
+                } catch (\PDOException $e) {
+                    if (strpos($e->getMessage(), "Prepared statement needs to be re-prepared") !== FALSE) {
+                        // Retry.
+                        Log::error("Reintentada consulta por error: " + $e->getMessage());
+                        continue;
+                    }
+                }
+
+                break;
+            }
 
             $this->recordsHaveBeenModified(
                 ($count = $statement->rowCount()) > 0
