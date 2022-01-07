@@ -341,7 +341,7 @@ class Connection implements ConnectionInterface
                         // Retry.
                         Log::error("$reqId - Reintentada consulta por error: " . $e->getMessage());
                         $reintentado = true;
-                        sleep(0.1);
+                        usleep(100000);
                         continue;
                     }
                 }
@@ -395,7 +395,7 @@ class Connection implements ConnectionInterface
                         // Retry.
                         Log::error("$reqId - Reintentada consulta por error: " . $e->getMessage());
                         $reintentado = true;
-                        sleep(0.1);
+                        usleep(100000);
                         continue;
                     }
                 }
@@ -508,7 +508,7 @@ class Connection implements ConnectionInterface
                         // Retry.
                         Log::error("$reqId - Reintentada consulta por error: " . $e->getMessage());
                         $reintentado = true;
-                        sleep(0.1);
+                        usleep(100000);
                         continue;
                     }
                 }
@@ -547,7 +547,7 @@ class Connection implements ConnectionInterface
                         // Retry.
                         Log::error("$reqId - Reintentada consulta por error: " . $e->getMessage());
                         $reintentado = true;
-                        sleep(0.1);
+                        usleep(100000);
                         continue;
                     }
                 }
