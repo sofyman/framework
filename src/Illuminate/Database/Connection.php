@@ -343,6 +343,8 @@ class Connection implements ConnectionInterface
                         $reintentado = true;
                         usleep(100000);
                         continue;
+                    } else {
+                        throw $e;
                     }
                 }
 
