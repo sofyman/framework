@@ -73,9 +73,9 @@ class Response extends BaseResponse
         if ($content instanceof Jsonable) {
             return $content->toJson();
         } elseif ($content instanceof Arrayable) {
-            return json_encode($content->toArray());
+            return json_encode($content->toArray(), JSON_INVALID_UTF8_SUBSTITUTE);
         }
 
-        return json_encode($content);
+        return json_encode($content, JSON_INVALID_UTF8_SUBSTITUTE);
     }
 }
